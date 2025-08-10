@@ -60,7 +60,7 @@ export const loginUser = async (req, res) => {
         if (!isMatch) {
             return res.status(500).json({ message: "Invalid email or password" });
         }
-
+      //console.log(email,password);
         // Return user data with JWT
         res.json({
             _id: user._id,
