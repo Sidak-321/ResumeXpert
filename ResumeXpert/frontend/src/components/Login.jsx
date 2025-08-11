@@ -49,7 +49,7 @@ const Login = ({ setCurrentPage }) => {
           value={email}
           onChange={({ target }) => setEmail(target.value)}
           label="Email Address"
-          placeholder="hexagonsservices@gmail.com"
+          placeholder="abc@gmail..com"
           type="email"
         />
         <Input
