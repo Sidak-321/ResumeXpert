@@ -33,7 +33,7 @@ app.use(
   '/uploads',
   express.static(path.join(__dirname, 'uploads'), {
     setHeaders: (res, _path) => {
-      res.set('Access-Control-Allow-Origin', 'https://resumexpert-frontend.onrender.com');
+      res.set('Access-Control-Allow-Origin', 'https://resumexpert-frontend-6hgd.onrender.com');
     },
   })
 );
