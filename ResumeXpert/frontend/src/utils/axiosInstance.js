@@ -1,9 +1,8 @@
 import axios from "axios";
-import { BASE_URL } from "./apiPaths";
+import { BASE_URL, FALLBACK_BASE_URL, RENDER_BASE_URL } from "./apiPaths";
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
-    timeout: 10000,
     headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -41,6 +40,19 @@ axiosInstance.interceptors.response.use(
         } else if (error.code === "ECONNABORTED") {
             console.error("Request timeout. Please try again.");
         }
+
+        const config = error.config;
+        if (
+            config &&
+            !config._retry &&
+            config.baseURL === RENDER_BASE_URL &&
+            FALLBACK_BASE_URL
+        ) {
+            config._retry = true;
+            config.baseURL = FALLBACK_BASE_URL;
+            return axiosInstance(config);
+        }
+
         return Promise.reject(error);
     }
 );

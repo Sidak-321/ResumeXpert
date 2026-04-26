@@ -187,6 +187,7 @@ export const cardStyles = {
   actionOverlay: "absolute inset-4 sm:inset-6 bg-gradient-to-t from-white/80 via-white/20 to-transparent flex items-end justify-center p-6 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-2xl",
   actionButtonsContainer: "flex gap-3",
   editButton: "group/btn w-12 h-12 flex items-center justify-center bg-gradient-to-r from-violet-600 to-fuchsia-600 rounded-2xl shadow-md hover:scale-110 transition-all duration-300",
+  atsButton: "group/btn w-12 h-12 flex items-center justify-center bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl shadow-md hover:scale-110 transition-all duration-300",
   deleteButton: "group/btn w-12 h-12 flex items-center justify-center bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl shadow-md hover:scale-110 transition-all duration-300",
   buttonIcon: "text-white group-hover/btn:scale-110 transition-transform",
 

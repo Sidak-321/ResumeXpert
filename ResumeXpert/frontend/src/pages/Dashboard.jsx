@@ -18,6 +18,11 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [resumeToDelete, setResumeToDelete] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showATSModal, setShowATSModal] = useState(false);
+  const [selectedResumeId, setSelectedResumeId] = useState(null);
+  const [atsForm, setAtsForm] = useState({ jobTitle: '', jobDescription: '', keywords: '' });
+  const [atsResult, setAtsResult] = useState(null);
+  const [loadingATS, setLoadingATS] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0,0)
@@ -152,6 +157,55 @@ const Dashboard = () => {
     setShowDeleteConfirm(true);
   };
 
+  const handleATSCheck = (id) => {
+    setSelectedResumeId(id);
+    setShowATSModal(true);
+    setAtsResult(null);
+    setAtsForm({ jobTitle: '', jobDescription: '', keywords: '' });
+  };
+
+  const handleATSSubmit = async () => {
+    if (!selectedResumeId) return;
+
+    const keywordsArray = atsForm.keywords.split(',').map(k => k.trim()).filter(k => k);
+    const hasInput = Boolean(
+      atsForm.jobTitle.trim() || atsForm.jobDescription.trim() || keywordsArray.length
+    );
+    if (!hasInput) {
+      toast.error('Add job title, description, or keywords before checking ATS.');
+      return;
+    }
+
+    setLoadingATS(true);
+    try {
+      const response = await axiosInstance.post(API_PATHS.RESUME.ATS_SCORE(selectedResumeId), {
+        jobTitle: atsForm.jobTitle.trim(),
+        jobDescription: atsForm.jobDescription.trim(),
+        keywords: keywordsArray,
+      });
+      const data = response.data || {};
+      setAtsResult({
+        score: typeof data.score === 'number' ? data.score : 0,
+        feedback: data.feedback || 'ATS analysis completed.',
+        suggestions: Array.isArray(data.suggestions) ? data.suggestions : [],
+        usedHeuristic: data.usedHeuristic === true,
+        source: data.source || (data.usedHeuristic === true ? 'heuristic' : 'unknown'),
+        modelUsed: data.modelUsed || null,
+        fallbackReason: data.fallbackReason || null,
+      });
+    } catch (error) {
+      console.error('Error getting ATS score:', error);
+      const backendMessage =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.message ||
+        'Failed to get ATS score';
+      toast.error(backendMessage);
+    } finally {
+      setLoadingATS(false);
+    }
+  };
+
   return (
     <DashboardLayout>
       {/* Main Container */}
@@ -234,6 +288,7 @@ const Dashboard = () => {
                 updatedAt={resume.updatedAt}
                 onSelect={() => navigate(`/resume/${resume._id}`)}
                 onDelete={() => handleDeleteClick(resume._id)}
+                onATSCheck={() => handleATSCheck(resume._id)}
                 completion={resume.completion || 0}
                 isPremium={resume.isPremium}
                 isNew={moment().diff(moment(resume.createdAt), 'days') < 7}
@@ -287,6 +342,91 @@ const Dashboard = () => {
               Are you sure you want to delete this resume? This action cannot be undone.
             </p>
           </div>
+        </div>
+      </Modal>
+
+      {/* ATS Score Modal */}
+      <Modal
+        isOpen={showATSModal}
+        onClose={() => setShowATSModal(false)}
+        title="Check ATS Score"
+        showActionBtn
+        actionBtnText={loadingATS ? "Checking..." : "Check Score"}
+        actionBtnClassName="bg-blue-600 hover:bg-blue-700"
+        onActionClick={handleATSSubmit}
+        disabled={loadingATS}
+      >
+        <div className="p-4">
+          {!atsResult ? (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Job Title
+                </label>
+                <input
+                  type="text"
+                  value={atsForm.jobTitle}
+                  onChange={(e) => setAtsForm({ ...atsForm, jobTitle: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g., Software Engineer"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Job Description
+                </label>
+                <textarea
+                  value={atsForm.jobDescription}
+                  onChange={(e) => setAtsForm({ ...atsForm, jobDescription: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={4}
+                  placeholder="Paste the job description here..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Keywords (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  value={atsForm.keywords}
+                  onChange={(e) => setAtsForm({ ...atsForm, keywords: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g., JavaScript, React, Node.js"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-blue-600">{atsResult.score}/100</div>
+                <p className="text-gray-600 mt-2">ATS Compatibility Score</p>
+                {atsResult?.source && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    Source: {atsResult.source === 'gemini' ? 'Gemini AI' : atsResult.source === 'heuristic' ? 'Heuristic Fallback' : 'Unknown (old backend response)'}
+                    {atsResult?.modelUsed ? ` (${atsResult.modelUsed})` : ''}
+                  </p>
+                )}
+                {atsResult.usedHeuristic && (
+                  <div className="mt-3 inline-flex items-center rounded-full bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-800">
+                    Heuristic fallback used for this score
+                  </div>
+                )}
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-800">Feedback:</h4>
+                <p className="text-gray-600 mt-1">{atsResult.feedback}</p>
+              </div>
+              <div>
+                <h4 className="font-medium text-gray-800">Suggestions:</h4>
+                <ul className="list-disc list-inside text-gray-600 mt-1">
+                  {(atsResult.suggestions || []).map((suggestion, index) => (
+                    <li key={index}>{suggestion}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
       </Modal>
     </DashboardLayout>

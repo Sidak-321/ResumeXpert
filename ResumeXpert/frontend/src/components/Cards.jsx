@@ -44,6 +44,7 @@ export const ResumeSummaryCard = ({
   updatedAt = null,
   onSelect,
   onDelete,
+  onATSCheck,
   completion = 85,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -150,6 +151,16 @@ export const ResumeSummaryCard = ({
                 title="Edit"
               >
                 <Edit size={18} className={cardStyles.buttonIcon} />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onATSCheck) onATSCheck();
+                }}
+                className={cardStyles.atsButton}
+                title="Check ATS Score"
+              >
+                <TrendingUp size={18} className={cardStyles.buttonIcon} />
               </button>
               <button
                 onClick={handleDeleteClick}
