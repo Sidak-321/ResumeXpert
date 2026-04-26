@@ -1,0 +1,7 @@
+.env
+node_modules
+ResumeXpert/.env
+ResumeXpert/backend/.env
+ResumeXpert/frontend/.env
+ResumeXpert/backend/node_modules
+ResumeXpert/frontend/node_modules
