@@ -1,4 +1,4 @@
-ResumeXpert/backend/.env
-ResumeXpert/frontend/.env
-ResumeXpert/backend/node_modules
-ResumeXpert/frontend/node_modules
+# instead of full paths, use these patterns
+.env
+.env.*
+**/node_modules
