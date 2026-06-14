@@ -1,122 +1,103 @@
 # ResumeXpert
 
-ResumeXpert is a full-stack resume builder application that helps users create, edit, and export professional resumes quickly. It includes a React + Vite frontend and a Node.js + Express backend with MongoDB for persistence.
+A full-stack resume builder — create, edit, and export professional resumes in minutes.
 
-## Table of Contents
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Setup & Run](#setup--run)
-  - [Backend](#backend)
-  - [Frontend](#frontend)
-- [Environment Variables](#environment-variables)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Features
-- Create, edit, and save resumes
-- Multiple templates for rendering/exporting resumes
-- Image upload support for profile pictures
-- Authentication (sign up / login)
-
-## Tech Stack
-- Frontend: React, Vite, Tailwind CSS (dependencies listed in `frontend/package.json`)
-- Backend: Node.js, Express, Mongoose (MongoDB)
-- Storage: MongoDB (local or Atlas)
-
-## Project Structure
-
-- `ResumeXpert/backend` — Express server, controllers, models, routes, middleware
-- `ResumeXpert/frontend` — React app (Vite) with components, pages, and utilities
-- `ResumeXpert/backend/uploads` — uploaded images managed by multer
-
-## Prerequisites
-- Node.js (v16+ recommended)
-- npm (or yarn)
-- MongoDB instance (local or Atlas)
-
-## Setup & Run
-
-### Backend
-
-1. Open a terminal and navigate to the backend folder:
-
-```bash
-cd ResumeXpert/backend
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Create a `.env` file in the backend folder and provide the required environment variables (see below).
-
-4. Start the backend (development with nodemon):
-
-```bash
-npm run start
-```
-
-This project uses `nodemon` for development. The backend entrypoint is `server.js`.
-
-### Frontend
-
-1. Open a terminal and navigate to the frontend folder:
-
-```bash
-cd ResumeXpert/frontend
-```
-
-2. Install dependencies:
-
-```bash
-npm install
-```
-
-3. Start the development server:
-
-```bash
-npm run dev
-```
-
-The frontend runs on Vite; open the URL shown in the terminal (commonly `http://localhost:5173`).
-
-## Environment Variables
-
-Create `.env` in the backend folder with at least the following variables:
-
-- `MONGO_URI` — MongoDB connection string
-- `JWT_SECRET` — secret key for signing JWTs
-- `PORT` — optional, server port (defaults handled in code)
-
-Optional keys depending on features:
-- API keys for third-party services (e.g. generative AI integration)
-
-## Usage
-
-1. Start the backend and frontend as shown above.
-2. Register an account or sign in from the frontend.
-3. Create and edit resumes, choose templates, and export or print as needed.
-
-## Contributing
-
-Contributions are welcome. Open an issue or submit a pull request with a clear description of the change.
-
-When contributing:
-- Follow the existing project structure and code style.
-- Run linting in the frontend with `npm run lint` from `ResumeXpert/frontend`.
-
-## License
-
-This repository does not specify a license. Add a `LICENSE` file if you want to make the project open source.
+**Live Demo:** [resumexpert-frontend-6hgd.onrender.com](https://resumexpert-frontend-6hgd.onrender.com)
 
 ---
 
-If you want, I can also:
-- add a sample `.env.example` in the backend,
-- generate a brief developer guide for the most important modules,
-- or add CI/dev scripts to the `package.json` files.
+## Tech Stack
+
+| Layer | Tech |
+|---|---|
+| Frontend | React, Vite, Tailwind CSS |
+| Backend | Node.js, Express |
+| Database | MongoDB (Mongoose) |
+| Auth | JWT |
+| Storage | Multer (image uploads) |
+| AI | Google Gemini API |
+
+---
+
+## Features
+
+- Authentication — sign up / login with JWT
+- Create, edit, and delete resumes
+- Multiple resume templates
+- Profile picture upload
+- ATS score analysis powered by the Gemini API, with a heuristic fallback if the AI is unavailable
+
+---
+
+## Project Structure
+
+```
+ResumeXpert/
+├── backend/       # Express server — routes, controllers, models, middleware
+└── frontend/      # React + Vite app — components, pages, utilities
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js v16+
+- MongoDB instance (local or Atlas)
+
+### Backend
+
+```bash
+cd ResumeXpert/backend
+npm install
+cp .env.example .env   # fill in your values
+npm run start
+```
+
+### Frontend
+
+```bash
+cd ResumeXpert/frontend
+npm install
+cp .env.example .env   # fill in your values
+npm run dev
+```
+
+---
+
+## Environment Variables
+
+### Backend (`ResumeXpert/backend/.env`)
+
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+PORT=4000
+GEMINI_API_KEY=your_google_gemini_api_key
+```
+
+### Frontend (`ResumeXpert/frontend/.env`)
+
+```env
+VITE_API_BASE_URL=http://localhost:4000
+```
+
+> In production, set `VITE_API_BASE_URL` to your deployed backend URL.
+
+---
+
+## Contributing
+
+1. Fork the repo
+2. Create a feature branch — `git checkout -b feat/your-feature`
+3. Commit and push
+4. Open a pull request
+
+Run `npm run lint` from `ResumeXpert/frontend` before submitting.
+
+---
+
+## License
+
+This project does not currently specify a license.
