@@ -1,4 +1,4 @@
 # instead of full paths, use these patterns
 .env
-.env.*
+.env.
 **/node_modules
